@@ -19,7 +19,9 @@ const accessChat = async (req, res) => {
       ],
     })
       .populate("users", "-password")
-      .populate("latestMessage");
+      .populate("latestMessage")
+      .lean()
+      .exec();
 
     isChat = await User.populate(isChat, {
       path: "latestMessage.sender",
@@ -29,7 +31,6 @@ const accessChat = async (req, res) => {
     if (isChat.length > 0) {
       res.send(isChat[0]);
     } else {
-      
       var chatData = {
         chatName: "sender",
         isGroupChat: false,
@@ -57,6 +58,8 @@ const fetchChats = async (req, res) => {
       .populate("groupAdmin", "-password")
       .populate("latestMessage")
       .sort({ updatedAt: -1 })
+      .lean()
+      .exec()
       .then(async (results) => {
         results = await User.populate(results, {
           path: "latestMessage.sender",
@@ -185,5 +188,5 @@ module.exports = {
   createGroupChat,
   renameGroup,
   addToGroup,
-  removefromGroup
+  removefromGroup,
 };

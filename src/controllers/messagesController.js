@@ -30,7 +30,9 @@ module.exports.addMessage = async (req, res, next) => {
 
     await Chat.findByIdAndUpdate(req.body.chatId, {
       latestMessage: data,
-    });
+    })
+      .lean()
+      .exec();
 
     if (data) {
       return res.json(data).status(201);
@@ -51,7 +53,9 @@ module.exports.getMessages = async (req, res, next) => {
         chat: req.params.chatId,
       })
       .populate("sender", "first_name last_name avatarImage username")
-      .populate("chat");
+      .populate("chat")
+      .lean()
+      .exec();
 
     return res.json(messages).status(200);
     //
