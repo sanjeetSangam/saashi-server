@@ -3,6 +3,7 @@ const brcypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
+// token generate funtion, expiring can be added also
 const newToken = (user) => {
   return jwt.sign({ user: user }, process.env.HASH_WORD);
 };
@@ -18,6 +19,7 @@ module.exports.register = async (req, res, next) => {
     }
 
     const mailCheck = await User.findOne({ email });
+
     if (mailCheck) {
       return res.json({ message: "Email already used", status: false });
     }
@@ -73,6 +75,7 @@ module.exports.login = async (req, res, next) => {
   }
 };
 
+// avatar
 module.exports.setAvatar = async (req, res, next) => {
   try {
     const userId = req.params.id;
@@ -98,6 +101,7 @@ module.exports.setAvatar = async (req, res, next) => {
   }
 };
 
+// return all users there on DB
 module.exports.getAllUsers = async (req, res, next) => {
   try {
     const users = await User.find({ _id: { $ne: req.params.id } }).select([
@@ -115,8 +119,13 @@ module.exports.getAllUsers = async (req, res, next) => {
   }
 };
 
+// search user and get all related users
 module.exports.allUsers = async (req, res, next) => {
   try {
+    // if there is keyword then search for either for the username or the email
+
+    // regex - match the query inside the DB and filter them
+    // i - handle case sensitive
     const keyword = req.query.search
       ? {
           $or: [
@@ -125,6 +134,8 @@ module.exports.allUsers = async (req, res, next) => {
           ],
         }
       : {};
+
+    // search all user related to keyword and do not include the current login user
     const users = await User.find(keyword)
       .find({
         _id: { $ne: req.user._id },

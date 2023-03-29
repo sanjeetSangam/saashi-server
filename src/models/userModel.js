@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// user model for user registration with all details like avatar, username, email etc.
 const userSchema = new mongoose.Schema(
   {
     first_name: { type: String, required: true },

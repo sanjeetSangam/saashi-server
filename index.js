@@ -42,6 +42,7 @@ const server = app.listen(process.env.PORT, () => {
   console.log(`Server has started on port : ${process.env.PORT}`);
 });
 
+// sockets with cors
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
@@ -50,19 +51,23 @@ const io = require("socket.io")(server, {
   },
 });
 
+// making connections to the socket
 io.on("connection", (socket) => {
-  console.log("connnected to socket");
+  // console.log("connnected to socket");
 
+  // making user to join the socket
   socket.on("setup_user", (userData) => {
     socket.join(userData._id);
     socket.emit("connected");
   });
 
+  // user join the current chat
   socket.on("join_chat", (chat) => {
     socket.join(chat);
-    console.log("user has joined the chat" + chat);
+    // console.log("user has joined the chat" + chat);
   });
 
+  // send message to the current chat
   socket.on("send_msg", (newMessage) => {
     var chat = newMessage.chat;
 
@@ -74,6 +79,7 @@ io.on("connection", (socket) => {
     });
   });
 
+  // disconnect
   socket.off("setup_user", () => {
     conosle.log("User has been disconnected");
     socket.leave(userData._id);
